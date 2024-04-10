@@ -29,7 +29,7 @@ const ws = new WebSocket(`${process.env.STREAM_URL_DEV}/${process.env.SYMBOL.toL
 
 const PROFITABILITY = parseFloat(process.env.PROFITABILITY);
 let sellPrice = 0;
-
+//
 ws.onmessage = (event) => {
     console.clear();
     const obj = JSON.parse(event.data);
@@ -37,15 +37,16 @@ ws.onmessage = (event) => {
     console.log(`Ask Price: ${obj.a}`);
 
     const currentPrice = parseFloat(obj.a);
-    if (sellPrice == 0 && currentPrice < 16000 ) {
+    if (sellPrice == 0 && currentPrice < 70000 ) {
         console.log('Comprar');
         sellPrice = currentPrice + (currentPrice * PROFITABILITY);
         //
 
-    } else if (currentPrice > 16000) {
+    } else if (sellPrice !== 0 &&  currentPrice >= 16000) {
         console.log('Vender');
+        sellPrice = 0;
     }
     console.log(`Esperando..`);
-    //console.log(`Price: ${currentPrice}`);
+    console.log(`SellPrice: ${sellPrice}`);
 
 }
