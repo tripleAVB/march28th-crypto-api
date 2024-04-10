@@ -38,12 +38,14 @@ ws.onmessage = (event) => {
 
     const currentPrice = parseFloat(obj.a);
     if (sellPrice == 0 && currentPrice < 70000 ) {
-        console.log('Comprar');
+        console.log('Bom pra Comprar');
+      newOrder("0.001", "BUY")
         sellPrice = currentPrice + (currentPrice * PROFITABILITY);
         //
 
     } else if (sellPrice !== 0 &&  currentPrice >= 16000) {
-        console.log('Vender');
+        console.log('Bom pra Vender');
+        newOrder("0.001", "SELL")
         sellPrice = 0;
     }
     console.log(`Esperando..`);
@@ -69,11 +71,22 @@ const recvwindow = 5000;
 
 const signature = crypto
     .createHmac('sha256', process.env.SECRET_KEY)
-    .update(`${new URLSearchParams({ ...data, timestamp, recvwindow }))`}
+    .update(`${new URLSearchParams({ ...data, timestamp, recvwindow })}`)
     .digest('hex')
 
 const newData = { ...data, timestamp, recvwindow, signature };
 const qs = `${new URLSearchParams(newData)}`;
+try {
+    const result = await  axios(
+    {
+      method: 'POST',
+      url: `${process.env.API_URL}/v3/order${qs}`,
+      headers: `${ 'X-MBX-APIKEY': process.env.API_KEY }`
+    }
+  ) console.log(result.data);
+} catch (err) {
+  console.error(err);
+}
 
 
 }
