@@ -71,6 +71,4 @@ async function newOrder(side, quantity) {
         console.error(err);
     }
 }
-```
 
-These changes should fix the errors in your code.
