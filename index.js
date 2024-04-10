@@ -1,16 +1,6 @@
-/**
- * 1 - MONTORAMENTO
- * 
- * 2- ESTRATÉGIA
- * 
- * 3 - TRADES
- * 
- * 
- */
-const http = require('http');
-//const dotenv = require('dotenv');
-require('dotenv').config();
 
+const http = require('http');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,14 +13,13 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-
 const WebSocket = require("ws");
 const ws = new WebSocket(`${process.env.STREAM_URL_DEV}/${process.env.SYMBOL.toLowerCase()}@ticker`);
 
 const PROFITABILITY = parseFloat(process.env.PROFITABILITY);
 let sellPrice = 0;
-//
-ws.onmessage = (event) => {
+
+ws.onmessage = async (event) => {
     console.clear();
     const obj = JSON.parse(event.data);
     console.log(`Symbol: ${obj.s}`);
@@ -39,71 +28,49 @@ ws.onmessage = (event) => {
     const currentPrice = parseFloat(obj.a);
     if (sellPrice == 0 && currentPrice < 70000 ) {
         console.log('Bom pra Comprar');
-      newOrder("0.001", "BUY")
+        await newOrder("BUY", "0.001");
         sellPrice = currentPrice + (currentPrice * PROFITABILITY);
-        //
-
     } else if (sellPrice !== 0 &&  currentPrice >= 16000) {
         console.log('Bom pra Vender');
-        newOrder("0.001", "SELL")
+        await newOrder("SELL", "0.001");
         sellPrice = 0;
     }
     console.log(`Esperando..`);
     console.log(`SellPrice: ${sellPrice}`);
-
 }
-
 
 const axios = require('axios');
-const crypto = reuire('crypto');
+const crypto = require('crypto');
 
-async function newOrder(){
+async function newOrder(side, quantity) {
+    const data = {
+        symbol: process.env.SYMBOL,
+        type: 'MARKET',
+        side,
+        quantity
+    }
 
-  const data = {
-    symbol: process.env.SYMBOL,
-    type: 'MARKET',
-    side,
-    quantity
-  }
+    const timestamp = Date.now();
+    const recvwindow = 5000;
 
-const timestamp = Date.now();
-const recvwindow = 5000;
+    const signature = crypto
+        .createHmac('sha256', process.env.SECRET_KEY)
+        .update(`${new URLSearchParams({ ...data, timestamp, recvwindow })}`)
+        .digest('hex');
 
-const signature = crypto
-    .createHmac('sha256', process.env.SECRET_KEY)
-    .update(`${new URLSearchParams({ ...data, timestamp, recvwindow })}`)
-    .digest('hex')
-
-const newData = { ...data, timestamp, recvwindow, signature };
-const qs = `${new URLSearchParams(newData)}`;
-try {
-    const result = await axios({
-      method: 'POST',
-      url: `${process.env.API_URL}/v3/order${qs}`,
-      headers: { 'X-MBX-APIKEY': process.env.API_KEY }
-    }) 
-      console.log(result.data);
-} 
-catch (err) {
-  console.error(err);
+    const newData = { ...data, timestamp, recvwindow, signature };
+    const qs = `${new URLSearchParams(newData)}`;
+    try {
+        const result = await axios({
+            method: 'POST',
+            url: `${process.env.API_URL}/v3/order${qs}`,
+            headers: { 'X-MBX-APIKEY': process.env.API_KEY }
+        });
+        console.log(result.data);
+    } catch (err) {
+        console.error(err);
+    }
 }
+```
 
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+These changes should fix the errors in your code.
