@@ -81,7 +81,7 @@ try {
     {
       method: 'POST',
       url: `${process.env.API_URL}/v3/order${qs}`,
-      headers: `${ 'X-MBX-APIKEY': process.env.API_KEY }`
+      headers: ${ 'X-MBX-APIKEY': process.env.API_KEY }
     }
   ) console.log(result.data);
 } catch (err) {
