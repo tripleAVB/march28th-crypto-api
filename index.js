@@ -77,14 +77,14 @@ const signature = crypto
 const newData = { ...data, timestamp, recvwindow, signature };
 const qs = `${new URLSearchParams(newData)}`;
 try {
-    const result = await  axios(
-    {
+    const result = await axios({
       method: 'POST',
       url: `${process.env.API_URL}/v3/order${qs}`,
       headers: { 'X-MBX-APIKEY': process.env.API_KEY }
-    }
-  ) console.log(result.data);
-} catch (err) {
+    }) 
+      console.log(result.data);
+} 
+catch (err) {
   console.error(err);
 }
 
