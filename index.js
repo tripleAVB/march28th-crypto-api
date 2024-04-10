@@ -60,7 +60,7 @@ const crypto = reuire('crypto');
 async function newOrder(){
 
   const data = {
-    symbol: process.env.SYMBOL;
+    symbol: process.env.SYMBOL,
     type: 'MARKET',
     side,
     quantity
