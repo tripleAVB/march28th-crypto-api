@@ -50,3 +50,47 @@ ws.onmessage = (event) => {
     console.log(`SellPrice: ${sellPrice}`);
 
 }
+
+
+const axios = require('axios');
+const crypto = reuire('crypto');
+
+async function newOrder(){
+
+  const data = {
+    symbol: process.env.SYMBOL;
+    type: 'MARKET',
+    side,
+    quantity
+  }
+
+const timestamp = Date.now();
+const recvwindow = 5000;
+
+const signature = crypto
+    .createHmac('sha256', process.env.SECRET_KEY)
+    .update(`${new URLSearchParams({ ...data, timestamp, recvwindow }))`}
+    .digest('hex')
+
+const newData = { ...data, timestamp, recvwindow, signature };
+const qs = `${new URLSearchParams(newData)}`;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
